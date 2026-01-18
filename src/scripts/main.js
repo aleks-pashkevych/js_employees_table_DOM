@@ -83,17 +83,16 @@ const pushNotification = (titleText, description, typeText) => {
   popup.append(h2, text);
 
   document.body.appendChild(popup);
-  setTimeout(() => popup.remove(), 4000);
+  setTimeout(() => popup.remove(), 2000);
 };
 
 const formDataValidator = (data) => {
-  if (data.name.length < 4) {
-    const type = 'error';
-
-    pushNotification('Error', 'Check Input Data', type);
+  if (data.name.length < 4 || data.age < 18 || data.age > 90) {
+    pushNotification('Error', 'Check Input Data', 'error');
 
     return false;
   }
+  pushNotification('Success', 'Data Added', 'Success');
 
   return true;
 };
