@@ -3,6 +3,7 @@ const tBody = document.querySelector('tbody');
 const heads = tHead.querySelectorAll('th');
 const rows = Array.from(tBody.querySelectorAll('tr'));
 let forward = true;
+let head = null;
 const form = document.createElement('form');
 
 const sortRowsForward = (column) =>
@@ -54,6 +55,13 @@ const sortRowsBackward = (column) =>
 const rebuildTable = (column) => {
   let sortedRows = '';
 
+  if (column !== head) {
+    head = column;
+    forward = true;
+  } else {
+    forward = false;
+  }
+
   if (forward === true) {
     sortedRows = sortRowsForward(column);
   }
@@ -62,7 +70,7 @@ const rebuildTable = (column) => {
     sortedRows = sortRowsBackward(column);
   }
 
-  forward = !forward;
+  // forward = !forward;
 
   while (tBody.firstChild) {
     tBody.removeChild(tBody.firstChild);
@@ -96,6 +104,26 @@ const formDataValidator = (data) => {
 
   return true;
 };
+const whoIsNotValid = (data) => {
+  if (data.name.length < 4) {
+    return 'name';
+  } else {
+    return 'age';
+  }
+};
+
+const addToTable = (employee) => {
+  const tableRow = document.createElement('tr');
+
+  tableRow.innerHTML = `
+    <td>${employee.name}</td>
+    <td>${employee.position}</td>
+    <td>${employee.office}</td>
+    <td>${employee.age}</td>
+    <td>${employee.salary}</td>
+  `;
+  tBody.appendChild(tableRow);
+};
 
 for (const cell of heads) {
   cell.addEventListener('click', (e) => {
@@ -128,6 +156,10 @@ for (const row of rows) {
     }
     row.classList.add('active');
   });
+
+  row.addEventListener('dblclick', (e) => {
+    row.remove();
+  });
 }
 
 document.body.append(form);
@@ -144,5 +176,19 @@ form.addEventListener('submit', (e) => {
     salary: Number(formData.get('salary')),
   };
 
-  formDataValidator(employee);
+  if (!formDataValidator(employee)) {
+    if (whoIsNotValid(employee) === 'name') {
+      form.name.style.borderColor = 'red';
+      form.name.style.borderWidth = '2px';
+    }
+
+    if (whoIsNotValid(employee) === 'age') {
+      form.age.style.borderColor = 'red';
+      form.name.style.borderWidth = '2px';
+    }
+  }
+
+  if (formDataValidator(employee)) {
+    addToTable(employee);
+  }
 });
